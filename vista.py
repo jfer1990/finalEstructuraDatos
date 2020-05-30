@@ -12,13 +12,22 @@ class view:
         self.imgCpy = self.img.copy()
         self.imgBackGround = ImageTk.PhotoImage(self.img)
         self.imagenFondo = self.lienzo.create_image(0,0,anchor="nw",image = self.imgBackGround)
+        self.obj=""
 
+        self.rad = .003
+
+        #ListaPosiciones tiene como estructura: (nombre del punto de referencia, posRelX, posRelY)
         self.listaPosiciones = [("DireccionFmat-edA", 0.101, .891), ("cheto", .131, .776),("edB",0.082,0.712),("cafeFmat",0.12321,0.681818),
                                 ("edC",0.082,0.571),("edD",0.1687,0.5173),("MaqDispensadora-Ed-D",0.13125,0.5735),
                                 ("C-Cómputo-Fmat",0.2014,0.821),("Biblioteca",0.269,0.615),("EstacionamientoLabs",0.063,0.4719),
                                 ("ed-H",0.1409,0.433),("FI-Renovables",0.2562,0.4768),("FI-Labs-Mecatronica",0.344,0.374),
                                 ("FI-Labs-IngCivil",0.503,0.551),("DireccionFI",0.7562,0.292),("CafeFI",0.816,0.143),
                                 ("Auditorio gral FI",0.815,0.389)]
+
+        #Formato EdgesList [(pt A, pt B, xRelativePtA,yRelativePtA, xRelativePtB,yRelativePtB)...(último edge)]
+        self.EdgesList = [("DireccionFmat-edA","cheto",0.101, .891,.131, .776),
+                          ("DireccionFmat-edA","C-Cómputo-Fmat",0.101, .891,0.2014,0.821),
+                          ("cheto","C-Cómputo-Fmat",.131, .776,0.2014,0.821)]
         self.listBotones = []
 
 
@@ -36,9 +45,9 @@ class view:
         self.imgBackGround = ImageTk.PhotoImage(self.img)
         self.lienzo.itemconfig(self.imagenFondo,image=self.imgBackGround)
 
-
+    #Precondición: recibe un evento de tipo click
+    #Retorna una tupla de posiciones relativas (xRel,yRel)
     def getRelPos(self,event):
-        rad = .003
         x = event.x
         y = event.y
 
@@ -58,8 +67,8 @@ class view:
         return (x*xSize,y*ySize)
 
 
+
     def displayPlace(self,event):
-        rad = .003
 
         posicion = self.getRelPos(event)
         xRel = posicion[0]
@@ -69,12 +78,14 @@ class view:
             x = tupla[1]
             y = tupla[2]
             val = (xRel - x) ** 2 + (yRel - y) ** 2
-            if val <= rad:
+            if val <= self.rad:
                 self.dibujarSitio(tupla)
                 return tupla
             else:
+                self.lienzo.delete(self.obj)
                 for each in self.listBotones:
                     each.destroy()
+
 
 
 
@@ -94,15 +105,10 @@ class view:
         label.config(bg='blue')
         label.place(relx=xRel,rely=yRel,anchor="sw")
         self.listBotones.append(label)
-
-        #self.lienzo.create_oval(xAbs - drawRad, yAbs - drawRad, xAbs + drawRad, yAbs + drawRad)
+        self.obj = self.lienzo.create_oval(xAbs - drawRad, yAbs - drawRad, xAbs + drawRad, yAbs + drawRad)
     def displayPos(self,event):
         pos = self.getRelPos(event)
         print(str(pos[0])+","+str(pos[1]))
 
 
 
-
-root = tkinter.Tk()
-v = view(root)
-root.mainloop()
