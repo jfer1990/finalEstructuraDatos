@@ -17,12 +17,21 @@ class view:
         self.rad = .003
 
         #ListaPosiciones tiene como estructura: (nombre del punto de referencia, posRelX, posRelY)
-        self.listaPosiciones = [("DireccionFmat-edA", 0.101, .891), ("cheto", .131, .776),("edB",0.082,0.712),("cafeFmat",0.12321,0.681818),
-                                ("edC",0.082,0.571),("edD",0.1687,0.5173),("MaqDispensadora-Ed-D",0.13125,0.5735),
-                                ("C-Cómputo-Fmat",0.2014,0.821),("Biblioteca",0.269,0.615),("EstacionamientoLabs",0.063,0.4719),
-                                ("ed-H",0.1409,0.433),("FI-Renovables",0.2562,0.4768),("FI-Labs-Mecatronica",0.344,0.374),
-                                ("FI-Labs-IngCivil",0.503,0.551),("DireccionFI",0.7562,0.292),("CafeFI",0.816,0.143),
-                                ("Auditorio gral FI",0.815,0.389)]
+        self.diccionarioPosiciones = {"v0":("edificioA-Direccion",(0.101, .891)),"v1":("edificio-B",(0.082,0.712)),"v2":("edificio-C",(0.082,0.571)),
+                                      "v3":("edificio-D",(0.1687,0.5173)),"v4":("edificio-H",(0.1409,0.433)),"v5":("C-Computo",(0.2014,0.821)),
+                                      "v6":("El cheto",(.131, .776)),"v7":("CafeteriaFmat",(0.12321,0.681818)),
+                                      "v8":("Estacionamiento",(0.063,0.4719)),"v9":("maquina dispensadora",(0.13125,0.5735)),
+                                      "v10":("Biblioteca",(0.269,0.615)),"v11":("Renovables",(0.2562,0.4768)),
+                                      "v12":("Lab.Mecatronica",(0.344,0.374)),"v13":("LabCivil",(0.503,0.551)),"v14":("DireccionFi",(0.7562,0.292)),
+                                      "v15":("AuditorioFI",(0.815,0.389)),"v16":("CafeteriaFI",(0.816,0.143))}
+
+
+       # self.listaPosiciones = [("DireccionFmat-edA", 0.101, .891), ("cheto", .131, .776),("edB",0.082,0.712),("cafeFmat",0.12321,0.681818),
+       #                         ("edC",0.082,0.571),("edD",0.1687,0.5173),("MaqDispensadora-Ed-D",0.13125,0.5735),
+        #                        ("C-Cómputo-Fmat",0.2014,0.821),("Biblioteca",0.269,0.615),("EstacionamientoLabs",0.063,0.4719),
+         #                       ("ed-H",0.1409,0.433),("FI-Renovables",0.2562,0.4768),("FI-Labs-Mecatronica",0.344,0.374),
+          #                      ("FI-Labs-IngCivil",0.503,0.551),("DireccionFI",0.7562,0.292),("CafeFI",0.816,0.143),
+           #                     ("Auditorio gral FI",0.815,0.389)]
 
         #Formato EdgesList [(pt A, pt B, xRelativePtA,yRelativePtA, xRelativePtB,yRelativePtB)...(último edge)]
         self.EdgesList = [("DireccionFmat-edA","cheto",0.101, .891,.131, .776),
@@ -44,6 +53,7 @@ class view:
         self.img = self.imgCpy.resize((new_width, new_height))
         self.imgBackGround = ImageTk.PhotoImage(self.img)
         self.lienzo.itemconfig(self.imagenFondo,image=self.imgBackGround)
+
 
     #Precondición: recibe un evento de tipo click
     #Retorna una tupla de posiciones relativas (xRel,yRel)
@@ -74,12 +84,13 @@ class view:
         xRel = posicion[0]
         yRel = posicion[1]
 
-        for tupla in self.listaPosiciones:
-            x = tupla[1]
-            y = tupla[2]
+        for key,tupla in self.diccionarioPosiciones.items():
+            pos = tupla[1]
+            x = pos[0]
+            y = pos[1]
             val = (xRel - x) ** 2 + (yRel - y) ** 2
             if val <= self.rad:
-                self.dibujarSitio(tupla)
+                self.dibujarSitio((tupla[0],pos[0],pos[1]))
                 return tupla
             else:
                 self.lienzo.delete(self.obj)
