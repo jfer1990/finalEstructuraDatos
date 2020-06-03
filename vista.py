@@ -12,20 +12,27 @@ class view:
         self.imgCpy = self.img.copy()
         self.imgBackGround = ImageTk.PhotoImage(self.img)
         self.imagenFondo = self.lienzo.create_image(0,0,anchor="nw",image = self.imgBackGround)
-        self.obj=""
+        self.button = tkinter.Button(self.lienzo,text="BotonText",width=20, height=2,activeforeground='red',font =('calibri', 15, 'bold'))
+        self.button.place(relx=0.5,rely=0.95,anchor="center")
+        self.obj = None
+
+
 
         self.rad = .003
 
-        #ListaPosiciones tiene como estructura: (nombre del punto de referencia, posRelX, posRelY)
-        self.diccionarioPosiciones = {"v0":("edificioA-Direccion",(0.101, .891)),"v1":("edificio-B",(0.082,0.712)),"v2":("edificio-C",(0.082,0.571)),
-                                      "v3":("edificio-D",(0.1687,0.5173)),"v4":("edificio-H",(0.1409,0.433)),"v5":("C-Computo",(0.2014,0.821)),
+         #Esta info puede manejarse en un csv,txt, o db.
+        #Representa la clave del nodo y la información en el canvas de ese nodo
+        self.diccionarioPosiciones = {"v0":("edificioA-Direccion",(0.101, .891)),"v1":("edificio-B",(0.082,0.712)),
+                                      "v2":("edificio-C",(0.082,0.571)),"v3":("edificio-D",(0.1687,0.5173)),
+                                      "v4":("edificio-H",(0.1409,0.433)),"v5":("C-Computo",(0.2014,0.821)),
                                       "v6":("El cheto",(.131, .776)),"v7":("CafeteriaFmat",(0.12321,0.681818)),
                                       "v8":("Estacionamiento",(0.063,0.4719)),"v9":("maquina dispensadora",(0.13125,0.5735)),
                                       "v10":("Biblioteca",(0.269,0.615)),"v11":("Renovables",(0.2562,0.4768)),
-                                      "v12":("Lab.Mecatronica",(0.344,0.374)),"v13":("LabCivil",(0.503,0.551)),"v14":("DireccionFi",(0.7562,0.292)),
-                                      "v15":("AuditorioFI",(0.815,0.389)),"v16":("CafeteriaFI",(0.816,0.143))}
+                                      "v12":("Lab.Mecatronica",(0.344,0.374)),"v13":("LabCivil",(0.503,0.551)),
+                                      "v14":("DireccionFi",(0.7562,0.292)),"v15":("AuditorioFI",(0.815,0.389)),
+                                      "v16":("CafeteriaFI",(0.816,0.143))}
 
-
+        #ListaPosiciones tiene como estructura: (nombre del punto de referencia, posRelX, posRelY)
        # self.listaPosiciones = [("DireccionFmat-edA", 0.101, .891), ("cheto", .131, .776),("edB",0.082,0.712),("cafeFmat",0.12321,0.681818),
        #                         ("edC",0.082,0.571),("edD",0.1687,0.5173),("MaqDispensadora-Ed-D",0.13125,0.5735),
         #                        ("C-Cómputo-Fmat",0.2014,0.821),("Biblioteca",0.269,0.615),("EstacionamientoLabs",0.063,0.4719),

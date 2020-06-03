@@ -7,13 +7,13 @@ class Vertex:
         self.distance = None
         self.parent = None
 
-
+#RECIBE TODO EN POSICION RELATIVA
 class Node(Vertex):
-    def __init__(self,pos,name):
+    def __init__(self,pos,name,rad):
         super().__init__()
         self._pos = pos
         self._name = name
-        self._rad = 14
+        self._rad = rad
 
     def getPos(self):
         return self._pos
@@ -74,9 +74,12 @@ class Graphs:
         #return False
     def createEdge(self,node1,node2):
         if node1 == None:
-            self.adjList.update({node2.getName():[]})
+            return False
+            #self.adjList.update({node2.getName():[]})
         elif node2== None:
-            self.adjList.update({node1.getName():[]})
+            return False
+           # self.adjList.update({node1.getName():[]})
+        #Obligación que nodo 1 y nodo2 existan.
         else:
             k1 = node1.getName()
             k2 = node2.getName()
