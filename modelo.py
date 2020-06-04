@@ -142,3 +142,22 @@ class Graphs:
         for u,v in edgesList:
             print(u.getName()+"~"+v.getName())
         return edgesList
+    def Diskstra(self,w,s):
+        self.Initialize(s)
+        S = []
+        Q = self.nodeList
+        while Q != None:
+            pass
+    def Initialize(self,s):
+        for v in self.nodeList:
+            v.distance = inf
+            v.parent = None
+        s.distance = 0
+
+    #w is a dictionary which key is a tuple of nodeNames
+    def Relax(self,u,v,w):
+        if v.distance > u.distance + w.get((u.getName(),v.getName())):
+            v.distance = u.distance + w.get(u.getName(),v.getName())
+            v.parent = u
+
+

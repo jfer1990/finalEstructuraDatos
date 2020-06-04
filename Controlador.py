@@ -13,6 +13,12 @@ class Controlador:
         self.edgeList = []
         self.L = self.cargaConjuntoAristas()
         self.listaRelaciones = self.generaAdyacencia()
+        self.weightDictionary = {("V5","V0"):45,("V0","V1"):30,("V6","V7"):50,("V5","V6"):35,("V0","V6"):20,
+                                 ("V1","V2"):25,("V2","V9"):20,("V9","V4"):30,("V9","V8"):30,("V4","V8"):20,
+                                 ("V5","V10"):50, ("V3","V10"):80, ("V4","V11"):30, ("V3","V11"):20, ("V7","V10"):80,
+                                 ("V11","V10"):90, ("V11","V12"):35, ("V4","V12"):65, ("V10","V13"):100, ("V11","V13"):110,
+                                 ("V12","V13"):90, ("V15","V14"):60, ("V16","V14"):50, ("V16","V15"):75, ("V14","V13"):175,
+                                 ("V15","V13"):200}
         print(self._modelo.printAdjacentList())
 
         self.canvas = self._vista.lienzo
@@ -138,7 +144,6 @@ class Controlador:
             listaLineas.append(lista)
         return listaLineas
     def generaAdyacencia(self):
-        relacion = []
         for sublista in self.L:
             tupla1 = sublista[0]
             tupla2 = sublista[len(sublista)-1]
