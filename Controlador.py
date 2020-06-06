@@ -13,13 +13,21 @@ class Controlador:
         self.edgeList = []
         self.L = self.cargaConjuntoAristas()
         self.listaRelaciones = self.generaAdyacencia()
-        self.weightDictionary = {("V5","V0"):45,("V0","V1"):30,("V6","V7"):50,("V5","V6"):35,("V0","V6"):20,
-                                 ("V1","V2"):25,("V2","V9"):20,("V9","V4"):30,("V9","V8"):30,("V4","V8"):20,
-                                 ("V5","V10"):50, ("V3","V10"):80, ("V4","V11"):30, ("V3","V11"):20, ("V7","V10"):80,
-                                 ("V11","V10"):90, ("V11","V12"):35, ("V4","V12"):65, ("V10","V13"):100, ("V11","V13"):110,
-                                 ("V12","V13"):90, ("V15","V14"):60, ("V16","V14"):50, ("V16","V15"):75, ("V14","V13"):175,
-                                 ("V15","V13"):200}
+        self.weightDictionary = {("v5","v0"):45,("v0","v5"):45,("v0","v1"):30,("v1","v0"):30,("v6","v7"):50,("v7","v6"):50,
+                                 ("v5","v6"):35,("v6","v5"):35,("v0","v6"):20,("v6","v0"):20,
+                                 ("v1","v2"):25,("v2","v1"):25,("v2","v9"):20,("v9","v2"):20,("v9","v4"):30,("v4","v9"):30,
+                                 ("v9","v8"):30,("v8","v9"):30,("v4","v8"):20,("v8","v4"):20,
+                                 ("v5","v10"):50,("v10","v5"):50, ("v3","v10"):80, ("v10","v3"):80, ("v4","v11"):30, ("v11","v4"):30,
+                                 ("v3","v11"):20, ("v7","v10"):80,("v11","v3"):20, ("v10","v7"):80,
+                                 ("v11","v10"):90, ("v11","v12"):35, ("v4","v12"):65, ("v10","v11"):90, ("v12","v11"):35, ("v12","v4"):65,
+                                 ("v10","v13"):100, ("v11","v13"):110,("v13","v10"):100, ("v13","v11"):110,
+                                 ("v12","v13"):90, ("v15","v14"):60, ("v16","v14"):50, ("v13","v12"):90, ("v14","v15"):60, ("v14","v16"):50,
+                                 ("v16","v15"):75, ("v14","v13"):175,("v15","v16"):75, ("v13","v14"):175,
+                                 ("v15","v13"):200,("v7","v9"):15,("v13","v15"):200,("v9","v7"):15,
+                                 ("v9","v3"):5,("v6","v10"):30,("v3","v9"):5,("v10","v6"):30}
         print(self._modelo.printAdjacentList())
+        print(self.weightDictionary.get(("V11","V13")))
+        self._modelo.Diskstra(self.weightDictionary,self.nodeList[2])
 
         self.canvas = self._vista.lienzo
      #   self.canvas.bind('<Double-Button-1>',self._EdgesScripts)
@@ -84,7 +92,9 @@ class Controlador:
             posicion = tupla[1]
             x = posicion[0]
             y = posicion[1]
-            lista.append(Node(Position(x,y),name,.003))
+            currentNode = Node(Position(x,y),name,.003)
+            lista.append(currentNode)
+            self._modelo.addNode(currentNode)
         return lista
     def _EdgesScripts(self,event):
 
@@ -154,6 +164,7 @@ class Controlador:
                     if nodo1Tupla[0] == tupla1[0] and nodo1Tupla[1] == tupla1[1]:
                         if nodo2Tupla[0] == tupla2[0] and nodo2Tupla[1] == tupla2[1]:
                             self._modelo.createEdge(nodo1,nodo2)
+
 
 
 

@@ -1,11 +1,15 @@
 from math import inf
 from _collections import deque
+from heapq import *
 
 class Vertex:
     def __init__(self):
         self.color = None
         self.distance = None
         self.parent = None
+    def setDistance(self,d):
+        self.distance = d
+
 
 #RECIBE TODO EN POSICION RELATIVA
 class Node(Vertex):
@@ -23,6 +27,8 @@ class Node(Vertex):
         return self._name
     def setPos(self, pos):
         self._pos = pos
+    def __lt__(self, other):
+        return self.distance < other.distance
 
 
 
@@ -38,9 +44,12 @@ class Position:
 
 class Graphs:
     def __init__(self):
+        #adjList es un diccionario que tiene como llave el nombre del nodo
         self.nodeList = []
         self.adjList = {}
         self._numOfNodes = 0
+
+
     def isNewNode(self,node):
         h,k = (node.getPos().getX()),(node.getPos().getY())
         for each in self.nodeList:
@@ -143,21 +152,49 @@ class Graphs:
             print(u.getName()+"~"+v.getName())
         return edgesList
     def Diskstra(self,w,s):
+        Q = []
         self.Initialize(s)
+        lista = self.nodeList.copy()
+        for nodo in lista:
+            key = nodo.distance
+            nameNode = nodo.getName()
+            heappush(Q,nodo)
         S = []
-        Q = self.nodeList
-        while Q != None:
-            pass
+        while len(Q) > 0:
+            u = heappop(Q)
+            S.append(u)
+            u_name = u.getName()
+            for vertex in self.adjList.get(u_name):
+                self.Relax(u,vertex,w)
+            self._updateQadjaceny(u)
+            heapify(Q)
+
+        for element in S:
+            print(element.getName()+" - "+str(element.distance))
     def Initialize(self,s):
         for v in self.nodeList:
             v.distance = inf
             v.parent = None
         s.distance = 0
 
+
     #w is a dictionary which key is a tuple of nodeNames
     def Relax(self,u,v,w):
-        if v.distance > u.distance + w.get((u.getName(),v.getName())):
-            v.distance = u.distance + w.get(u.getName(),v.getName())
-            v.parent = u
+        nameU = u.getName()
+        nameV = v.getName()
+        disU = u.distance
+        disV = v.distance
+        val = w.get((nameU,nameV))
+        if disV > disU + val:
+            v.setDistance(disU+val)
 
 
+    def _updateQadjaceny(self,u):
+        lista = self.adjList.get(u.getName())
+        for item in lista:
+            actualList = self.adjList.get(item.getName())
+            for i in actualList:
+                if i.getName() == u.getName():
+                    actualList.remove(i)
+                    break
+        self.adjList.pop(u.getName())
