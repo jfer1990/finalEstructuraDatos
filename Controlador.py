@@ -28,8 +28,10 @@ class Controlador:
         print(self._modelo.printAdjacentList())
         print(self.weightDictionary.get(("V11","V13")))
         self.nodoRaiz = self.nodeList[0]#AQUI SE INSERTA EL NODO RAIZ
+        self.nodoDestino = self.nodeList[8]
         self.DijkstraPath = self._modelo.Diskstra(self.weightDictionary,self.nodoRaiz)
         self.probarDijkstra()
+        self.crearRuta(self.nodoRaiz,self.nodoDestino)
 
         self.canvas = self._vista.lienzo
      #   self.canvas.bind('<Double-Button-1>',self._EdgesScripts)
@@ -158,8 +160,23 @@ class Controlador:
                 print(parent[0] + " -> " + str(posicion[0]) + " " + str(nodo.distance))
 
     # Invariante de lazo: todo nodo  tiene únicamente un único padre excepto el inicial
-    def ruta(self, nodoInicial, nodoFinal):
-        pass
+    def crearRuta(self, nodoInicial, nodoFinal):
+        self.DijkstraPath = self._modelo.Diskstra(self.weightDictionary, nodoInicial)
+        path = self.defineCamino(nodoInicial,nodoFinal)
+        self.printOnTerminalRout(path)
+    def defineCamino(self,nodoInicial,nodoFinal):
+        if nodoFinal.getName() != nodoInicial.getName():
+            return self.defineCamino(nodoInicial,nodoFinal.parent) + [nodoFinal]
+        else:
+            return [nodoFinal]
+    def printOnTerminalRout(self,ruta):
+        pos = self._vista.diccionarioPosiciones
+        for nodo in ruta:
+            posicion = pos.get(nodo.getName())
+            if nodo.getName() != self.nodoRaiz.getName():
+                parent = pos.get(nodo.parent.getName())
+                print(parent[0] + " -> " + str(posicion[0]) + " ",end = '')
+
 
 
 
