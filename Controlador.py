@@ -27,10 +27,12 @@ class Controlador:
                                  ("v9","v3"):5,("v6","v10"):30,("v3","v9"):5,("v10","v6"):30}
         print(self._modelo.printAdjacentList())
         print(self.weightDictionary.get(("V11","V13")))
+
+
         self.nodoRaiz = self.nodeList[0]#AQUI SE INSERTA EL NODO RAIZ
         self.nodoDestino = self.nodeList[8]
-        self.DijkstraPath = self._modelo.Diskstra(self.weightDictionary,self.nodoRaiz)
-        self.probarDijkstra()
+       # self.DijkstraPath = self._modelo.Diskstra(self.weightDictionary,self.nodoRaiz)
+        #self.probarDijkstra()
         self.crearRuta(self.nodoRaiz,self.nodoDestino)
 
         self.canvas = self._vista.lienzo
