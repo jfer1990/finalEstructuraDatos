@@ -76,12 +76,20 @@ class view:
 
 
         return (xRel,yRel)
+    def _getAbsPos(self,tuplaPosiciones):
+        x = tuplaPosiciones[0]
+        y = tuplaPosiciones[1]
+        ySize = self.lienzo.winfo_height()
+        xSize = self.lienzo.winfo_width()
+        #print(x)
+        return (x*xSize,y*ySize)
     def getAbsPos(self,tuplaPosiciones):
         x = tuplaPosiciones[0]
         y = tuplaPosiciones[1]
         ySize = self.lienzo.winfo_height()
         xSize = self.lienzo.winfo_width()
-        return (x*xSize,y*ySize)
+
+        return (x * xSize, y * ySize)
 
 
 
@@ -116,7 +124,7 @@ class view:
         texto = tuplaPosiciones[0]
         xRel = tuplaPosiciones[1]
         yRel = tuplaPosiciones[2]
-        pos = self.getAbsPos((xRel, yRel))
+        pos = self._getAbsPos((xRel, yRel))
         xAbs = pos[0]
         yAbs = pos[1]
         label = tkinter.Label(self.lienzo,text=texto,font=("Helvetica", 16),fg="white")
@@ -126,7 +134,21 @@ class view:
         self.obj = self.lienzo.create_oval(xAbs - drawRad, yAbs - drawRad, xAbs + drawRad, yAbs + drawRad)
     def displayPos(self,event):
         pos = self.getRelPos(event)
-        print(str(pos[0])+","+str(pos[1]))
+       # print(str(pos[0])+","+str(pos[1]))
+    def pum(self,tuplaPosiciones):
+        drawRad=14
+
+        texto = tuplaPosiciones[0]
+        xRel = tuplaPosiciones[1]
+        yRel = tuplaPosiciones[2]
+        pos = self._getAbsPos((xRel, yRel))
+        xAbs = pos[0]
+        yAbs = pos[1]
+        label = tkinter.Label(self.lienzo,text=texto,font=("Helvetica", 16),fg="white")
+        label.config(bg='blue')
+        label.place(relx=xRel,rely=yRel,anchor="sw")
+        self.listBotones.append(label)
+        self.obj = self.lienzo.create_oval(xAbs - drawRad, yAbs - drawRad, xAbs + drawRad, yAbs + drawRad)
 
 
 

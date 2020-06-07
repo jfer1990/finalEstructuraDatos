@@ -12,6 +12,7 @@ class Controlador:
         self.nodeList = self.cargaNodos()
         self.edgeList = []
         self.L = self.cargaConjuntoAristas()
+        self.Lmapeo =   {}
         self.listaRelaciones = self.generaAdyacencia()
         self.weightDictionary = {("v5","v0"):45,("v0","v5"):45,("v0","v1"):30,("v1","v0"):30,("v6","v7"):50,("v7","v6"):50,
                                  ("v5","v6"):35,("v6","v5"):35,("v0","v6"):20,("v6","v0"):20,
@@ -25,19 +26,22 @@ class Controlador:
                                  ("v16","v15"):75, ("v14","v13"):175,("v15","v16"):75, ("v13","v14"):175,
                                  ("v15","v13"):200,("v7","v9"):15,("v13","v15"):200,("v9","v7"):15,
                                  ("v9","v3"):5,("v6","v10"):30,("v3","v9"):5,("v10","v6"):30}
-        print(self._modelo.printAdjacentList())
-        print(self.weightDictionary.get(("V11","V13")))
+        #print(self._modelo.printAdjacentList())
+        #print(self.weightDictionary.get(("V11","V13")))
 
 
-        self.nodoRaiz = self.nodeList[0]#AQUI SE INSERTA EL NODO RAIZ
-        self.nodoDestino = self.nodeList[8]
+        self.nodoRaiz = None
+        self.nodoDestino = None
        # self.DijkstraPath = self._modelo.Diskstra(self.weightDictionary,self.nodoRaiz)
         #self.probarDijkstra()
-        self.crearRuta(self.nodoRaiz,self.nodoDestino)
+
 
         self.canvas = self._vista.lienzo
-     #   self.canvas.bind('<Double-Button-1>',self._EdgesScripts)
-        self._vista.button.bind('<Button-1>',self.adyacencia)
+        self.canvas.bind('<Double-Button-1>',self.selectPositions)
+
+
+
+     #   self._vista.button.bind('<Button-1>',self.adyacencia)
     def run(self):
         self._master.title("Mapa Ciencias Exactas UADY")
         self._master.deiconify()
@@ -51,7 +55,7 @@ class Controlador:
             name = tupla[0]
             pos = tupla[1]
             if self.isCollision(pos,position):
-                return (name,pos[0],pos[1])
+                return (key,name,pos[0],pos[1])
         return False
 
     #Precondición: recibe 2 tuplas (x,y) representando posiciones cada una
@@ -103,13 +107,31 @@ class Controlador:
                 pos2 = self._vista.getAbsPos((x2, y2))
                 self.canvas.create_line(pos1[0], pos1[1], pos2[0], pos2[1], fill='red')
                 self.aux = None
-                print(self.edgeList)
+                #print(self.edgeList)
                 self.edgeList.clear()
         else:
             self.edgeList.append(pos)
-    def adyacencia(self,event):
-        if self.cargarGrafo():
-            pass
+    def selectPositions(self,event):
+        pos = self._vista.getRelPos(event)
+        point = self.isPoint(pos)
+        if point != False:
+            keyNode = point[0]
+            if self.nodoRaiz == None:
+                for nodo in self.nodeList:
+                    if nodo.getName()==keyNode:
+                        self.nodoRaiz = nodo
+                        self._vista.pum((point[1],point[2],point[3]))
+            else:
+                for nodo in self.nodeList:
+                    if nodo.getName()==keyNode:
+                        self.nodoDestino = nodo
+                        self._vista.pum((point[1], point[2], point[3]))
+                self.crearRuta(self.nodoRaiz, self.nodoDestino)
+                self.nodoRaiz = None
+                self.nodoDestino = None
+
+
+
 
 
     def cargarGrafo(self):
@@ -142,6 +164,9 @@ class Controlador:
                 lista = lista+[tupla]
             listaLineas.append(lista)
         return listaLineas
+
+    #Esta función puede dividirse en 2, ya que carga en el modelo una lista de adyacencia pero igual
+    #modifica el atributo self.lmapeo de la clase controlador, por tiempo fue implementada así.
     def generaAdyacencia(self):
         for sublista in self.L:
             tupla1 = sublista[0]
@@ -153,6 +178,9 @@ class Controlador:
                     if nodo1Tupla[0] == tupla1[0] and nodo1Tupla[1] == tupla1[1]:
                         if nodo2Tupla[0] == tupla2[0] and nodo2Tupla[1] == tupla2[1]:
                             self._modelo.createEdge(nodo1,nodo2)
+                            self.Lmapeo[(nodo1.getName(),nodo2.getName())] = (sublista)
+                            self.Lmapeo[(nodo2.getName(),nodo1.getName())] = (sublista)
+
     def probarDijkstra(self):
         pos = self._vista.diccionarioPosiciones
         for nodo in self.DijkstraPath:
@@ -166,6 +194,7 @@ class Controlador:
         self.DijkstraPath = self._modelo.Diskstra(self.weightDictionary, nodoInicial)
         path = self.defineCamino(nodoInicial,nodoFinal)
         self.printOnTerminalRout(path)
+        self.printOnCanvas(path)
     def defineCamino(self,nodoInicial,nodoFinal):
         if nodoFinal.getName() != nodoInicial.getName():
             return self.defineCamino(nodoInicial,nodoFinal.parent) + [nodoFinal]
@@ -177,7 +206,36 @@ class Controlador:
             posicion = pos.get(nodo.getName())
             if nodo.getName() != self.nodoRaiz.getName():
                 parent = pos.get(nodo.parent.getName())
-                print(parent[0] + " -> " + str(posicion[0]) + " ",end = '')
+                print(parent[0] + " -> " + str(posicion[0]) + "; ",end = '')
+
+    def printOnCanvas(self, ruta):
+        pos = self._vista.diccionarioPosiciones
+        LineSet = []
+        for nodo in ruta:
+            if nodo.getName() != self.nodoRaiz.getName():
+                parent = nodo.parent
+                aux = self.Lmapeo.get((nodo.getName(),parent.getName()))
+                #if aux == None:
+                 #   aux = self.Lmapeo.get((parent.getName(),nodo.getName()))
+                if aux== None:
+                    print ("error")
+                    return False
+                LineSet = LineSet + aux
+        print("\n")
+    #    print(LineSet)
+        evenLineSet = LineSet[::2]
+        oddLineSet = LineSet[1::2]
+        aux = None
+        cont = 0
+        for point in range(len(LineSet)-1):
+            ptoA = LineSet[point]
+            ptoB = LineSet[point + 1]
+            ptoA = self._vista.getAbsPos(ptoA)
+            ptoB = self._vista.getAbsPos(ptoB)
+            self.canvas.create_line(ptoA[0],ptoA[1],ptoB[0],ptoB[1])
+            #print(str(ptoA)+" "+str(ptoB))
+
+
 
 
 

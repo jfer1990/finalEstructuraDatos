@@ -169,8 +169,8 @@ class Graphs:
             #self._updateQadjaceny(u)
             #heapify(Q)
 
-        for element in S:
-            print(element.getName()+" - "+str(element.distance))
+       # for element in S:
+        #    print(element.getName()+" - "+str(element.distance))
         return S
 
     def Initialize(self,s):
