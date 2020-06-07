@@ -27,7 +27,9 @@ class Controlador:
                                  ("v9","v3"):5,("v6","v10"):30,("v3","v9"):5,("v10","v6"):30}
         print(self._modelo.printAdjacentList())
         print(self.weightDictionary.get(("V11","V13")))
-        self._modelo.Diskstra(self.weightDictionary,self.nodeList[2])
+        self.nodoRaiz = self.nodeList[0]#AQUI SE INSERTA EL NODO RAIZ
+        self.DijkstraPath = self._modelo.Diskstra(self.weightDictionary,self.nodoRaiz)
+        self.probarDijkstra()
 
         self.canvas = self._vista.lienzo
      #   self.canvas.bind('<Double-Button-1>',self._EdgesScripts)
@@ -36,24 +38,7 @@ class Controlador:
         self._master.title("Mapa Ciencias Exactas UADY")
         self._master.deiconify()
         self._master.mainloop()
-    def dijkstra(self,event):
-        #ahora sólo cosas para probar el programa
-        pos = self._vista.getRelPos(event)
-        point = self.isPoint(pos)
-        if point != False:
-            if self.aux == None:
-                self.aux = point
-            else:
-                x1= point[1]
-                y1 = point[2]
-                x2 = self.aux[1]
-                y2 = self.aux[2]
-                pos1 = self._vista.getAbsPos((x1,y1))
-                pos2 = self._vista.getAbsPos((x2,y2))
-                self.canvas.create_line(pos1[0],pos1[1],pos2[0],pos2[1],fill='red')
-                self.aux = None
 
-      #  self.canvas.create_line()
 
     #Precondicion: recibe una tupla de posiciones: (xRel,yRel)
     #Returns una tupla de la lista de posiciones de la clase vista o Falso si no hay coincidencias
@@ -164,12 +149,17 @@ class Controlador:
                     if nodo1Tupla[0] == tupla1[0] and nodo1Tupla[1] == tupla1[1]:
                         if nodo2Tupla[0] == tupla2[0] and nodo2Tupla[1] == tupla2[1]:
                             self._modelo.createEdge(nodo1,nodo2)
+    def probarDijkstra(self):
+        pos = self._vista.diccionarioPosiciones
+        for nodo in self.DijkstraPath:
+            posicion = pos.get(nodo.getName())
+            if nodo.getName() != self.nodoRaiz.getName():
+                parent = pos.get(nodo.parent.getName())
+                print(parent[0] + " -> " + str(posicion[0]) + " " + str(nodo.distance))
 
-
-
-
-
-
+    # Invariante de lazo: todo nodo  tiene únicamente un único padre excepto el inicial
+    def ruta(self, nodoInicial, nodoFinal):
+        pass
 
 
 

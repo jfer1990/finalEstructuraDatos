@@ -1,6 +1,6 @@
 from math import inf
 from _collections import deque
-from heapq import *
+from heapq import * #AUNQUE NO ESTÁN IMPLEMENTADOS, PUEDEN USARSE Y EL PROGRAMA SERÍA MÁS EFICIENTE POR LA ARITMÉTICA DE BINARIOS.
 
 class Vertex:
     def __init__(self):
@@ -9,6 +9,8 @@ class Vertex:
         self.parent = None
     def setDistance(self,d):
         self.distance = d
+    def setParent(self,p):
+        self.parent = p
 
 
 #RECIBE TODO EN POSICION RELATIVA
@@ -152,41 +154,40 @@ class Graphs:
             print(u.getName()+"~"+v.getName())
         return edgesList
     def Diskstra(self,w,s):
-        Q = []
+        pila = []
+        alpha = None
+        Q = self.nodeList.copy()
         self.Initialize(s)
-        lista = self.nodeList.copy()
-        for nodo in lista:
-            key = nodo.distance
-            nameNode = nodo.getName()
-            heappush(Q,nodo)
         S = []
         while len(Q) > 0:
-            u = heappop(Q)
+            u = self.minimumDistance(Q)
+            u.color = "black"
             S.append(u)
-            u_name = u.getName()
-            for vertex in self.adjList.get(u_name):
-                self.Relax(u,vertex,w)
-            self._updateQadjaceny(u)
-            heapify(Q)
+            neighbors = self.adjList.get(u.getName())
+            for neighbor in neighbors:
+                self.Relax(u,neighbor,w)
+            #self._updateQadjaceny(u)
+            #heapify(Q)
 
         for element in S:
             print(element.getName()+" - "+str(element.distance))
+        return S
+
     def Initialize(self,s):
         for v in self.nodeList:
             v.distance = inf
             v.parent = None
+            v.color = "white"
         s.distance = 0
+
 
 
     #w is a dictionary which key is a tuple of nodeNames
     def Relax(self,u,v,w):
-        nameU = u.getName()
-        nameV = v.getName()
-        disU = u.distance
-        disV = v.distance
-        val = w.get((nameU,nameV))
-        if disV > disU + val:
-            v.setDistance(disU+val)
+        val = w.get((u.getName(),v.getName()))
+        if v.distance > u.distance + val and v.color=="white":
+            v.setDistance(u.distance+val)
+            v.setParent(u)
 
 
     def _updateQadjaceny(self,u):
@@ -198,3 +199,22 @@ class Graphs:
                     actualList.remove(i)
                     break
         self.adjList.pop(u.getName())
+
+    #Quita la distancia más pequeña en el conjunto de vértices  y elimina el nodo
+
+    def minimumDistance(self,Q):
+        # Initilaize minimum distance for next node
+        min = inf
+        minVertex = None
+
+        # Search not nearest vertex not in the
+        # shortest path tree
+        for v in Q:
+            if v.distance < min and v.color == "white":
+                min = v.distance
+                minVertex = v
+        Q.remove(minVertex)
+
+
+        return minVertex
+
