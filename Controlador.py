@@ -38,6 +38,7 @@ class Controlador:
 
         self.canvas = self._vista.lienzo
         self.canvas.bind('<Double-Button-1>',self.selectPositions)
+        self.canvas.bind('<Button-1>',self.show)
 
 
 
@@ -211,29 +212,60 @@ class Controlador:
     def printOnCanvas(self, ruta):
         pos = self._vista.diccionarioPosiciones
         LineSet = []
-        for nodo in ruta:
-            if nodo.getName() != self.nodoRaiz.getName():
-                parent = nodo.parent
-                aux = self.Lmapeo.get((nodo.getName(),parent.getName()))
+       # for nodo in ruta:
+        #    if nodo.getName() != self.nodoRaiz.getName():
+        #        parent = nodo.parent
+        #        aux = self.Lmapeo.get((nodo.getName(),parent.getName()))
                 #if aux == None:
                  #   aux = self.Lmapeo.get((parent.getName(),nodo.getName()))
-                if aux== None:
-                    print ("error")
-                    return False
-                LineSet = LineSet + aux
+        #        if aux== None:
+        #            print ("error")
+        #            return False
+        #        LineSet = LineSet + aux
+
+        for index in range(1,len(ruta)):
+            actual = ruta[index]
+            parent = actual.parent.getName()
+            actual = actual.getName()
+            LineSet.append(self.Lmapeo.get((parent,actual)))
+            #cada sublista en lineSet, es el conjunto de puntos de un punto a uno b
         print("\n")
     #    print(LineSet)
         evenLineSet = LineSet[::2]
         oddLineSet = LineSet[1::2]
         aux = None
         cont = 0
-        for point in range(len(LineSet)-1):
-            ptoA = LineSet[point]
-            ptoB = LineSet[point + 1]
-            ptoA = self._vista.getAbsPos(ptoA)
-            ptoB = self._vista.getAbsPos(ptoB)
-            self.canvas.create_line(ptoA[0],ptoA[1],ptoB[0],ptoB[1])
+
+
+        auxiliarList = []
+        ptoB = None
+        derechaA = None
+        while LineSet:
+            if derechaA == None:
+                ptoA = LineSet.pop(0)
+                derechaA = self.isPoint(ptoA[len(ptoA)-1])
+                auxiliarList = auxiliarList + ptoA
+            else:
+                ptoB = LineSet.pop(0)
+                izquierdaB = self.isPoint(ptoB[0])
+                if derechaA != izquierdaB:
+                    ptoB.reverse()
+                auxiliarList = auxiliarList + ptoB
+
+
+        for index in range(len(auxiliarList)-1):
+            posA = auxiliarList[index]
+            posB = auxiliarList[index + 1]
+            posA = self._vista.getAbsPos(posA)
+            posB = self._vista.getAbsPos(posB)
+            self.canvas.create_line(posA[0], posA[1], posB[0], posB[1])
+       #     aux = LineSet[point]
             #print(str(ptoA)+" "+str(ptoB))
+    def show(self,event):
+        x = event.x
+        y = event.y
+        pos = self._vista.getRelPos(event)
+        print(pos)
 
 
 

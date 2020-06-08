@@ -81,7 +81,6 @@ class view:
         y = tuplaPosiciones[1]
         ySize = self.lienzo.winfo_height()
         xSize = self.lienzo.winfo_width()
-        #print(x)
         return (x*xSize,y*ySize)
     def getAbsPos(self,tuplaPosiciones):
         x = tuplaPosiciones[0]
