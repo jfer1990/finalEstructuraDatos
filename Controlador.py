@@ -28,6 +28,8 @@ class Controlador:
                                  ("v9","v3"):5,("v6","v10"):30,("v3","v9"):5,("v10","v6"):30}
         #print(self._modelo.printAdjacentList())
         #print(self.weightDictionary.get(("V11","V13")))
+        self.listaLineasDibujadas = []
+        self.listaOvalosSeleccionados = []
 
 
         self.nodoRaiz = None
@@ -121,12 +123,12 @@ class Controlador:
                 for nodo in self.nodeList:
                     if nodo.getName()==keyNode:
                         self.nodoRaiz = nodo
-                        self._vista.pum((point[1],point[2],point[3]))
+                        #self.listaOvalosSeleccionados.append(self._vista.pum((point[1],point[2],point[3])))
             else:
                 for nodo in self.nodeList:
                     if nodo.getName()==keyNode:
                         self.nodoDestino = nodo
-                        self._vista.pum((point[1], point[2], point[3]))
+                        #self.listaOvalosSeleccionados.append(self._vista.pum((point[1], point[2], point[3])))
                 self.crearRuta(self.nodoRaiz, self.nodoDestino)
                 self.nodoRaiz = None
                 self.nodoDestino = None
@@ -210,6 +212,10 @@ class Controlador:
                 print(parent[0] + " -> " + str(posicion[0]) + "; ",end = '')
 
     def printOnCanvas(self, ruta):
+        for each in self.listaLineasDibujadas:
+            self.canvas.delete(each)
+        for each in self.listaOvalosSeleccionados:
+            self.canvas.delete(each)
         pos = self._vista.diccionarioPosiciones
         LineSet = []
        # for nodo in ruta:
@@ -239,26 +245,49 @@ class Controlador:
 
         auxiliarList = []
         ptoB = None
+        ptoA = None
         derechaA = None
+        first = True
         while LineSet:
             if derechaA == None:
                 ptoA = LineSet.pop(0)
                 derechaA = self.isPoint(ptoA[len(ptoA)-1])
-                auxiliarList = auxiliarList + ptoA
             else:
                 ptoB = LineSet.pop(0)
                 izquierdaB = self.isPoint(ptoB[0])
                 if derechaA != izquierdaB:
+                    print("entre")
                     ptoB.reverse()
+                    izquierdaB = self.isPoint(ptoB[0])
+                if derechaA != izquierdaB:
+                    print("entre")
+                    ptoB.reverse()
+                    ptoA.reverse()
+                    derechaA = self.isPoint(ptoA[len(ptoA)-1])
+                    izquierdaB = self.isPoint(ptoB[0])
+                if derechaA != izquierdaB:
+                    print("entre")
+                    ptoB.reverse()
+                    izquierdaB = self.isPoint(ptoB[0])
+                if derechaA == izquierdaB:
+                    derechaA = self.isPoint(ptoB[len(ptoB)-1])
+                    if first:
+                        auxiliarList = auxiliarList + ptoA
+                        first = False
+
                 auxiliarList = auxiliarList + ptoB
+        if first:
+            auxiliarList = auxiliarList + ptoA
 
 
         for index in range(len(auxiliarList)-1):
             posA = auxiliarList[index]
             posB = auxiliarList[index + 1]
+            nomPosA = self.isPoint(posA)
+            nomPosB =self.isPoint(posB)
             posA = self._vista.getAbsPos(posA)
             posB = self._vista.getAbsPos(posB)
-            self.canvas.create_line(posA[0], posA[1], posB[0], posB[1])
+            self.listaLineasDibujadas.append(self.canvas.create_line(posA[0], posA[1], posB[0], posB[1]))
        #     aux = LineSet[point]
             #print(str(ptoA)+" "+str(ptoB))
     def show(self,event):
