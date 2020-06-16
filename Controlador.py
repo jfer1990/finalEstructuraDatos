@@ -9,10 +9,11 @@ class Controlador:
         self._vista = view(self._master)
 
         self.aux = None
+        self.diccionarioLugares = {}
         self.nodeList = self.cargaNodos()
         self.edgeList = []
         self.L = self.cargaConjuntoAristas()
-        self.Lmapeo =   {}
+        self.Lmapeo = {}
         self.listaRelaciones = self.generaAdyacencia()
         self.weightDictionary = {("v5","v0"):45,("v0","v5"):45,("v0","v1"):30,("v1","v0"):30,("v6","v7"):50,("v7","v6"):50,
                                  ("v5","v6"):35,("v6","v5"):35,("v0","v6"):20,("v6","v0"):20,
@@ -26,21 +27,17 @@ class Controlador:
                                  ("v16","v15"):75, ("v14","v13"):175,("v15","v16"):75, ("v13","v14"):175,
                                  ("v15","v13"):200,("v7","v9"):15,("v13","v15"):200,("v9","v7"):15,
                                  ("v9","v3"):5,("v6","v10"):30,("v3","v9"):5,("v10","v6"):30}
-        #print(self._modelo.printAdjacentList())
-        #print(self.weightDictionary.get(("V11","V13")))
+
         self.listaLineasDibujadas = []
         self.listaOvalosSeleccionados = []
+        self.nodosDibujados = []
 
 
         self.nodoRaiz = None
         self.nodoDestino = None
-       # self.DijkstraPath = self._modelo.Diskstra(self.weightDictionary,self.nodoRaiz)
-        #self.probarDijkstra()
-
 
         self.canvas = self._vista.lienzo
         self.canvas.bind('<Double-Button-1>',self.selectPositions)
-        self.canvas.bind('<Button-1>',self.show)
 
 
 
@@ -85,6 +82,8 @@ class Controlador:
         lista = []
         for key,tupla in self._vista.diccionarioPosiciones.items():
             name = key
+            nombreLugar = tupla[0]
+            self.diccionarioLugares[name] = nombreLugar
             posicion = tupla[1]
             x = posicion[0]
             y = posicion[1]
@@ -123,12 +122,10 @@ class Controlador:
                 for nodo in self.nodeList:
                     if nodo.getName()==keyNode:
                         self.nodoRaiz = nodo
-                        #self.listaOvalosSeleccionados.append(self._vista.pum((point[1],point[2],point[3])))
             else:
                 for nodo in self.nodeList:
                     if nodo.getName()==keyNode:
                         self.nodoDestino = nodo
-                        #self.listaOvalosSeleccionados.append(self._vista.pum((point[1], point[2], point[3])))
                 self.crearRuta(self.nodoRaiz, self.nodoDestino)
                 self.nodoRaiz = None
                 self.nodoDestino = None
@@ -145,8 +142,7 @@ class Controlador:
             # for each in self.nodeList:
             #   print(each.getName()+" position: "+str(each.getPos().getX())+","+str(each.getPos().getY())+"radio: "+str(each.getRad()))
         return True
-    def aristas(self,event):
-        pass
+
     def cargaConjuntoAristas(self):
         listaLineas = []
         file = open("coordenadasAristas.txt","r")
@@ -216,31 +212,22 @@ class Controlador:
             self.canvas.delete(each)
         for each in self.listaOvalosSeleccionados:
             self.canvas.delete(each)
-        pos = self._vista.diccionarioPosiciones
-        LineSet = []
-       # for nodo in ruta:
-        #    if nodo.getName() != self.nodoRaiz.getName():
-        #        parent = nodo.parent
-        #        aux = self.Lmapeo.get((nodo.getName(),parent.getName()))
-                #if aux == None:
-                 #   aux = self.Lmapeo.get((parent.getName(),nodo.getName()))
-        #        if aux== None:
-        #            print ("error")
-        #            return False
-        #        LineSet = LineSet + aux
+        for each in self.nodosDibujados:
+            each.destroy()
 
+
+        LineSet = []
+
+        sumaMetros = 0
         for index in range(1,len(ruta)):
             actual = ruta[index]
             parent = actual.parent.getName()
+            sumaMetros = self.weightDictionary.get((actual.getName(),parent))+sumaMetros
             actual = actual.getName()
             LineSet.append(self.Lmapeo.get((parent,actual)))
+            #drawSpot
             #cada sublista en lineSet, es el conjunto de puntos de un punto a uno b
         print("\n")
-    #    print(LineSet)
-        evenLineSet = LineSet[::2]
-        oddLineSet = LineSet[1::2]
-        aux = None
-        cont = 0
 
 
         auxiliarList = []
@@ -256,17 +243,14 @@ class Controlador:
                 ptoB = LineSet.pop(0)
                 izquierdaB = self.isPoint(ptoB[0])
                 if derechaA != izquierdaB:
-                    print("entre")
                     ptoB.reverse()
                     izquierdaB = self.isPoint(ptoB[0])
                 if derechaA != izquierdaB:
-                    print("entre")
                     ptoB.reverse()
                     ptoA.reverse()
                     derechaA = self.isPoint(ptoA[len(ptoA)-1])
                     izquierdaB = self.isPoint(ptoB[0])
                 if derechaA != izquierdaB:
-                    print("entre")
                     ptoB.reverse()
                     izquierdaB = self.isPoint(ptoB[0])
                 if derechaA == izquierdaB:
@@ -279,22 +263,34 @@ class Controlador:
         if first:
             auxiliarList = auxiliarList + ptoA
 
-
+        #Dibuja las lineas de los lugares en la ruta
         for index in range(len(auxiliarList)-1):
             posA = auxiliarList[index]
             posB = auxiliarList[index + 1]
-            nomPosA = self.isPoint(posA)
-            nomPosB =self.isPoint(posB)
             posA = self._vista.getAbsPos(posA)
             posB = self._vista.getAbsPos(posB)
-            self.listaLineasDibujadas.append(self.canvas.create_line(posA[0], posA[1], posB[0], posB[1]))
-       #     aux = LineSet[point]
-            #print(str(ptoA)+" "+str(ptoB))
-    def show(self,event):
-        x = event.x
-        y = event.y
-        pos = self._vista.getRelPos(event)
-        print(pos)
+            self.listaLineasDibujadas.append(self.canvas.create_line(posA[0], posA[1], posB[0], posB[1],width=4,fill='green'))
+
+        #Dibuja texto en el canvas
+        salida =""
+        for nodo in ruta:
+            self.dibujaNodo(nodo)
+            nombreLugar = self.diccionarioLugares.get(nodo.getName())
+            salida = salida+" >> "+nombreLugar
+        salida = salida + " : "+str(sumaMetros) +  "mts"
+        self.canvas.itemconfig(self._vista.text,fill="RoyalBlue4",text=salida)
+
+    def dibujaNodo(self,nodo):
+        texto = self.diccionarioLugares.get(nodo.getName())
+        pos = nodo.getPos()
+        xRel = pos.getX()
+        yRel = pos.getY()
+        label = tkinter.Label(self.canvas, text=texto, font=("Helvetica", 13), fg="white")
+        label.config(bg='orange')
+        label.place(relx=xRel, rely=yRel, anchor="sw")
+        self.nodosDibujados.append(label)
+
+
 
 
 

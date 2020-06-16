@@ -74,15 +74,7 @@ class Graphs:
             return True
         else:
             return self.isNewNode(node)
-    #Precondición: node1 and node2 must be instantiated, returns False when node1 and node2 doesnt already existed
-    #def createEdge(self,node1, node2):
-     #   pos = -1
-      #  for each in self.nodeList:
-       #     pos += 1
-        #    if each == node1:
-         #       self.adjList[pos] = self.adjList[pos] + [node2]
-          #      return True
-        #return False
+
     def createEdge(self,node1,node2):
         if node1 == None:
             return False

@@ -12,8 +12,7 @@ class view:
         self.imgCpy = self.img.copy()
         self.imgBackGround = ImageTk.PhotoImage(self.img)
         self.imagenFondo = self.lienzo.create_image(0,0,anchor="nw",image = self.imgBackGround)
-        self.button = tkinter.Button(self.lienzo,text="BotonText",width=20, height=2,activeforeground='red',font =('calibri', 15, 'bold'))
-        self.button.place(relx=0.5,rely=0.95,anchor="center")
+        self.text = self.lienzo.create_text(10,10,anchor = "nw",fill="darkblue",font="Times 20 italic bold", text = "Seleccione haciendo doble click en el punto inicial y doble click en el punto final")
         self.obj = None
 
 
